@@ -263,9 +263,16 @@ public class EditMenu<T extends SavedPosition> extends Menu {
                             return true;
                         },
                         plugin.getLocales().getLocale("edit_privacy_button"),
-                        plugin.getLocales().getLocale("edit_privacy_message", (home.isPublic() ?
-                                plugin.getLocales().getLocale("edit_privacy_message_public")
-                                : plugin.getLocales().getLocale("edit_privacy_message_private")))));
+                        // NOTE: Use getFormattedLocale() + getRawLocale() here instead of nesting
+                        // getLocale() inside getLocale(). getLocale() returns an already fully
+                        // rendered (legacy-serialized) string; feeding that back in as a %1%
+                        // replacement into another getLocale() call causes MiniMessage to throw
+                        // a ParsingException, since it refuses to parse raw legacy formatting
+                        // codes embedded in its input. Using the raw (unrendered) locale text as
+                        // the replacement and deferring parsing to a single, final pass avoids this.
+                        plugin.getLocales().getFormattedLocale("edit_privacy_message", (home.isPublic() ?
+                                plugin.getLocales().getRawLocale("edit_privacy_message_public").orElse("")
+                                : plugin.getLocales().getRawLocale("edit_privacy_message_private").orElse("")))));
             }
 
             // Deleting

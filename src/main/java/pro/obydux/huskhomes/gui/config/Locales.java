@@ -84,7 +84,14 @@ public class Locales {
     /**
      * Returns a MiniMessage-formatted locale from the locales file, with replacements applied
      * <p>
-     * Note that replacements will be MiniMessage-escaped before application
+     * Note that replacements will be MiniMessage-escaped before application. Use this overload
+     * for plain/untrusted text values (e.g. player names, descriptions).
+     * <p>
+     * <b>Do not</b> pass the output of another {@link #getLocale(String, String...)} call as a
+     * replacement here — that value is already a rendered (legacy-serialized) string and will
+     * cause a {@code ParsingException} since MiniMessage rejects raw legacy formatting codes. Use
+     * {@link #getFormattedLocale(String, String...)} together with {@link #getRawLocale(String)}
+     * for composing locale strings out of other locale strings instead.
      *
      * @param localeId     String identifier of the locale, corresponding to a key in the file
      * @param replacements Ordered array of replacement strings to fill in placeholders with
@@ -94,6 +101,28 @@ public class Locales {
     public String getLocale(@NotNull String localeId, @NotNull String... replacements) {
         return getRawLocale(localeId, Arrays.stream(replacements)
                 .map(Locales::escapeText).toArray(String[]::new))
+                .map(MiniMessage.miniMessage()::deserialize)
+                .map(LegacyComponentSerializer.builder().build()::serialize)
+                .orElse("");
+    }
+
+    /**
+     * Returns a MiniMessage-formatted locale from the locales file, with raw replacements applied.
+     * <p>
+     * Unlike {@link #getLocale(String, String...)}, the replacements passed here are <b>not</b>
+     * escaped, and are substituted into the raw (unparsed) template before the entire result is
+     * parsed by MiniMessage exactly once. Use this method (in combination with
+     * {@link #getRawLocale(String)}) when composing a locale string out of the raw, unrendered
+     * MiniMessage tags of another locale string, instead of feeding an already fully-rendered
+     * (legacy-serialized) locale string into this method.
+     *
+     * @param localeId        String identifier of the locale, corresponding to a key in the file
+     * @param rawReplacements Ordered array of raw (already MiniMessage-safe) replacement strings
+     * @return The replacement-applied, formatted locale corresponding to the id, or an empty string if not found
+     */
+    @NotNull
+    public String getFormattedLocale(@NotNull String localeId, @NotNull String... rawReplacements) {
+        return getRawLocale(localeId, rawReplacements)
                 .map(MiniMessage.miniMessage()::deserialize)
                 .map(LegacyComponentSerializer.builder().build()::serialize)
                 .orElse("");
