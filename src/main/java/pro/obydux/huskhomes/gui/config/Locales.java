@@ -19,7 +19,7 @@
 
 package pro.obydux.huskhomes.gui.config;
 
-import de.themoep.minedown.adventure.MineDown;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.william278.annotaml.YamlFile;
 import pro.obydux.huskhomes.gui.HuskHomesGui;
@@ -34,8 +34,8 @@ import java.util.regex.Pattern;
         ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
         ┃     HuskHomesGui Locales     ┃
         ┃    Developed by William278   ┃
-        ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-        ┗╸ Formatted in MineDown: https://github.com/Phoenix616/MineDown""",
+        ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+        ┗╸ Formatted in MiniMessage: https://docs.advntr.dev/minimessage/format.html""",
         rootedMap = true)
 public class Locales {
 
@@ -61,7 +61,7 @@ public class Locales {
     /**
      * Returns a raw, un-formatted locale loaded from the locales file, with replacements applied
      * <p>
-     * Note that replacements will not be MineDown-escaped; use {@link #escapeText(String)} to escape replacements
+     * Note that replacements will not be MiniMessage-escaped; use {@link #escapeText(String)} to escape replacements
      *
      * @param localeId     String identifier of the locale, corresponding to a key in the file
      * @param replacements Ordered array of replacement strings to fill in placeholders with
@@ -72,7 +72,7 @@ public class Locales {
     }
 
     /**
-     * Returns a MineDown-formatted locale from the locales file
+     * Returns a MiniMessage-formatted locale from the locales file
      *
      * @param localeId String identifier of the locale, corresponding to a key in the file
      * @return An {@link Optional} containing the formatted locale corresponding to the id, if it exists
@@ -82,9 +82,9 @@ public class Locales {
     }
 
     /**
-     * Returns a MineDown-formatted locale from the locales file, with replacements applied
+     * Returns a MiniMessage-formatted locale from the locales file, with replacements applied
      * <p>
-     * Note that replacements will be MineDown-escaped before application
+     * Note that replacements will be MiniMessage-escaped before application
      *
      * @param localeId     String identifier of the locale, corresponding to a key in the file
      * @param replacements Ordered array of replacement strings to fill in placeholders with
@@ -94,7 +94,7 @@ public class Locales {
     public String getLocale(@NotNull String localeId, @NotNull String... replacements) {
         return getRawLocale(localeId, Arrays.stream(replacements)
                 .map(Locales::escapeText).toArray(String[]::new))
-                .map(MineDown::new).map(MineDown::toComponent)
+                .map(MiniMessage.miniMessage()::deserialize)
                 .map(LegacyComponentSerializer.builder().build()::serialize)
                 .orElse("");
     }
@@ -118,26 +118,14 @@ public class Locales {
     }
 
     /**
-     * Escape a string from {@link MineDown} formatting for use in a MineDown-formatted locale
+     * Escape a string from MiniMessage tag formatting for use in a MiniMessage-formatted locale
      *
      * @param string The string to escape
      * @return The escaped string
      */
     @NotNull
     public static String escapeText(@NotNull String string) {
-        final StringBuilder value = new StringBuilder();
-        for (int i = 0; i < string.length(); ++i) {
-            char c = string.charAt(i);
-            boolean isEscape = c == '\\';
-            boolean isColorCode = i + 1 < string.length() && (c == 167 || c == '&');
-            boolean isEvent = c == '[' || c == ']' || c == '(' || c == ')';
-            if (isEscape || isColorCode || isEvent) {
-                value.append('\\');
-            }
-
-            value.append(c);
-        }
-        return value.toString();
+        return MiniMessage.miniMessage().escapeTags(string);
     }
 
 

@@ -28,7 +28,6 @@ dependencies {
 
     implementation("de.themoep:inventorygui:1.6.5-SNAPSHOT")
     implementation("org.apache.commons:commons-text:1.13.1")
-    implementation("net.william278:minedown:1.8.2")
     implementation("dev.dejvokep:boosted-yaml:1.3.7")
     implementation("net.wesjd:anvilgui:2.0.3-SNAPSHOT")
     implementation("net.william278:annotaml:2.0.7-4f14c61")
@@ -65,7 +64,6 @@ tasks.shadowJar {
     relocate("org.jetbrains", "pro.obydux.huskhomes.gui.libraries")
     relocate("org.intellij", "pro.obydux.huskhomes.gui.libraries")
     relocate("de.themoep.inventorygui", "pro.obydux.huskhomes.gui.libraries.inventorygui")
-    relocate("de.themoep.minedown", "pro.obydux.huskhomes.gui.libraries.minedown")
     relocate("net.wesjd.anvilgui", "pro.obydux.huskhomes.gui.libraries.anvilgui")
     relocate("net.william278.annotaml", "pro.obydux.huskhomes.gui.libraries.annotaml")
     relocate("net.william278.desertwell", "pro.obydux.huskhomes.gui.libraries.desertwell")

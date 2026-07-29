@@ -19,10 +19,10 @@
 
 package pro.obydux.huskhomes.gui.command;
 
-import de.themoep.minedown.adventure.MineDown;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.william278.desertwell.about.AboutMenu;
 import pro.obydux.huskhomes.gui.HuskHomesGui;
 import org.bukkit.command.Command;
@@ -76,8 +76,8 @@ public class HuskHomesGuiCommand implements CommandExecutor, TabExecutor {
         final String subCommand = args.length >= 1 ? args[0] : "";
         if (subCommand.equals("reload")) {
             plugin.reloadConfigFiles();
-            audience.sendMessage(new MineDown("[[HuskHomesGUI]](#00fb9a bold) [Reloaded config files!](#00fb9a)")
-                    .toComponent());
+            audience.sendMessage(MiniMessage.miniMessage().deserialize(
+                    "<bold><color:#00fb9a>[HuskHomesGUI]</color></bold> <color:#00fb9a>Reloaded config files!</color>"));
         } else {
             audience.sendMessage(aboutMenu.toComponent());
         }
